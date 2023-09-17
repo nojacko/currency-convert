@@ -1,24 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" href="./favicon.png" />
-		<meta name="viewport" content="width=device-width" />
-		
-		<link rel="modulepreload" href="./_app/immutable/entry/start.15698d4f.js">
-		<link rel="modulepreload" href="./_app/immutable/chunks/scheduler.e108d1fd.js">
-		<link rel="modulepreload" href="./_app/immutable/chunks/singletons.a6a0e6b9.js">
-		<link rel="modulepreload" href="./_app/immutable/entry/app.ba4ddb85.js">
-		<link rel="modulepreload" href="./_app/immutable/chunks/index.0719bd3d.js">
-		<link rel="modulepreload" href="./_app/immutable/nodes/0.a4d6fcb2.js">
-		<link rel="modulepreload" href="./_app/immutable/nodes/2.ce583c9c.js">
-	</head>
-	<body data-sveltekit-preload-data="hover">
-		<div style="display: contents">  <h1 data-svelte-h="svelte-yyjjjs">Welcome to SvelteKit</h1> <p data-svelte-h="svelte-jl9sbz">Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p> 
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="./favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    
+		<link rel="modulepreload" href="./_app/immutable/entry/start.9f6d8900.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/scheduler.b95eede2.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/singletons.d5810a4b.js">
+		<link rel="modulepreload" href="./_app/immutable/entry/app.e41f06ae.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/index.bf9e658d.js">
+		<link rel="modulepreload" href="./_app/immutable/nodes/0.db017193.js">
+		<link rel="modulepreload" href="./_app/immutable/nodes/2.9e78e085.js"><title>Currency Converter</title><!-- HEAD_svelte-1qe8gry_START --><meta name="description" content=""><!-- HEAD_svelte-1qe8gry_END -->
+</head>
+<body data-sveltekit-preload-data="hover" id="top">
+    <div style="display: contents">   <div class="container-fluid mx-auto px-0" style="max-width: 40rem;"><h1 class="text-center display-4 text-light mx-1 my-2" data-svelte-h="svelte-19m6v0m">Currency Cheatsheet</h1> <table class="table table-hover table-striped text-center"><thead><tr><td class="col-12 px-0 py-3" colspan="3"><div class="input-group input-group-sm"><select class="form-select" id="currency-from"></select> <button class="btn btn-outline-secondary btn-sm mx-auto" type="button" title="Swap" data-svelte-h="svelte-vja3k1"><i class="fa-solid fa-shuffle"></i></button> <select class="form-select" id="currency-to"></select></div></td></tr></thead> </table> <div class="row"><div class="col-12 text-center"><button class="btn btn-outline-secondary m-1" type="button" title="Customise" data-svelte-h="svelte-5px787"><i class="fa-solid fa-gear"></i> Customise</button></div></div></div> 
 			
 			<script>
 				{
-					__sveltekit_cmxy5z = {
+					__sveltekit_112yu7 = {
 						base: new URL(".", location).pathname.slice(0, -1),
 						env: {}
 					};
@@ -28,8 +31,8 @@
 					const data = [null,null];
 
 					Promise.all([
-						import("./_app/immutable/entry/start.15698d4f.js"),
-						import("./_app/immutable/entry/app.ba4ddb85.js")
+						import("./_app/immutable/entry/start.9f6d8900.js"),
+						import("./_app/immutable/entry/app.e41f06ae.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element, {
 							node_ids: [0, 2],
@@ -41,5 +44,5 @@
 				}
 			</script>
 		</div>
-	</body>
+</body>
 </html>
