@@ -17,7 +17,7 @@ export default class Rate {
         rate.from = json.from;
         rate.to = json.to;
         rate.rate = json.rate;
-        rate.updateAt = json.updatedAt;
+        rate.updatedAt = json.updatedAt;
         return rate;
     }
 

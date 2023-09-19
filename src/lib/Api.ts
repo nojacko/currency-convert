@@ -46,11 +46,9 @@ export default class CurrecyApi {
         return rate;
     }
 
-    static async getThings(code: string) {
-        const key = `${KEY_THINGS}-${code}`;
-
+    static async getThings() {
         // Read cache
-        const cachedStr = LocalStorage.getItem(key);
+        const cachedStr = LocalStorage.getItem(KEY_THINGS);
         if (cachedStr) {
             const cachedJson: ThingJson[] = JSON.parse(cachedStr);
             return cachedJson.map((item) => Thing.fromJson(item));
