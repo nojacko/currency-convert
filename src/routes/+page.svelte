@@ -51,14 +51,16 @@
                 baseRateInverse = await Api.getRate(to.code, BASE);
 
                 // Generate defaults
-                const thingsFrom = Thing.thingsForCurrency(things, fromCode);
-                if (thingsFrom.length === 0) {
-                    things.push(...generateDefaultThings(rate, baseRate));
-                }
+                if (rate && rateInverse && baseRate && baseRateInverse) {
+                    const thingsFrom = Thing.thingsForCurrency(things, fromCode);
+                    if (thingsFrom.length === 0) {
+                        things.push(...generateDefaultThings(rate, baseRate));
+                    }
 
-                const thingsTo = Thing.thingsForCurrency(things, toCode);
-                if (thingsTo.length === 0) {
-                    things.push(...generateDefaultThings(rateInverse, baseRateInverse));
+                    const thingsTo = Thing.thingsForCurrency(things, toCode);
+                    if (thingsTo.length === 0) {
+                        things.push(...generateDefaultThings(rateInverse, baseRateInverse));
+                    }
                 }
 
                 saveThings();
@@ -98,7 +100,7 @@
             }
 
             if (baseRateInverse) {
-                things.push(...generateDefaultThings(rate, baseRateInverse));
+                things.push(...generateDefaultThings(rateInverse, baseRateInverse));
             }
         }
 
@@ -143,58 +145,71 @@
 
     {#if customise && Array.isArray(things)}
         {#each things as thing (thing.id)}
-            <div class="card border-secondary mb-4">
+            <div class="card border-secondary mb-2">
                 <div class="card-header">
                     <div class="row align-items-center">
                         <div class="col-10 col-sm-11">{thing.name ? `${thing.name} (${thing.currency})` : formatCurrency(thing.value, thing.currency)}</div>
                         <div class="col-2 col-sm-1">
-                            <button
-                                id="delete-{thing.id}" class="btn btn-sm btn-outline-danger float-end" type="button" title="Delete"
-                                on:click={() => deleteThing(thing)}
-                            >
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body py-3 p-0">
-                    <div class="container-fluid">
-                        <div class="row gx-2">
-                            <div class="col-12 col-sm-6 pb-2">
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text" id="thing-name-{thing.id}">Name</span>
-                                    <input
-                                        id="thing-name-{thing.id}" type="text" class="form-control"
-                                        placeholder="optional"
-                                        bind:value={thing.name}
+                            <div class="d-grid gap-2">
+                                {#if thing.custom}
+                                    <button
+                                        id="delete-{thing.id}" class="btn btn-sm btn-outline-danger float-end" type="button" title="Delete"
+                                        on:click={() => deleteThing(thing)}
                                     >
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6 pb-2">
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">Amount</span>
-                                    <input
-                                        id="thing-value-{thing.id}" type="number" class="form-control form-control-sm text-end"
-                                        min="0" placeholder=""
-                                        bind:value={thing.value}
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                {:else}
+                                    <button
+                                        id="delete-{thing.id}" class="btn btn-sm btn-outline-secondary float-end" type="button" title="Delete"
+                                        on:click={() => thing.visible = !thing.visible }
                                     >
-                                    <span class="input-group-text">{thing.currency}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row gx-2">
-                            <div class="col-12">
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text" id="thing-description-{thing.id}">Description</span>
-                                    <input id="thing-description-{thing.id}" class="form-control form-control-sm"
-                                        type="text" placeholder="optional"
-                                        bind:value={thing.description}
-                                    >
-                                </div>
+                                        <i class="fa-regular {thing.visible ? "fa-eye" : "fa-eye-slash" }"></i>
+                                    </button>
+                                {/if}
                             </div>
                         </div>
                     </div>
                 </div>
+                {#if thing.custom}
+                    <div class="card-body py-3 p-0">
+                        <div class="container-fluid">
+                            <div class="row gx-2">
+                                <div class="col-12 col-sm-6 pb-2">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text" id="thing-name-{thing.id}">Name</span>
+                                        <input
+                                            id="thing-name-{thing.id}" type="text" class="form-control"
+                                            placeholder="optional"
+                                            bind:value={thing.name}
+                                        >
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-6 pb-2">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">Amount</span>
+                                        <input
+                                            id="thing-value-{thing.id}" type="number" class="form-control form-control-sm text-end"
+                                            min="0" placeholder=""
+                                            bind:value={thing.value}
+                                        >
+                                        <span class="input-group-text">{thing.currency}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row gx-2">
+                                <div class="col-12">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text" id="thing-description-{thing.id}">Description</span>
+                                        <input id="thing-description-{thing.id}" class="form-control form-control-sm"
+                                            type="text" placeholder="optional"
+                                            bind:value={thing.description}
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {/if}
             </div>
         {/each}
     {:else}
@@ -255,7 +270,7 @@
                     </tr>
 
                     {#each things as thing (thing.id)}
-                        {#if
+                        {#if thing.visible &&
                             (
                                 thing.currency === fromCode ||
                                 (thing.currency === toCode && thing.custom)
@@ -278,7 +293,11 @@
 
                                     <p class="text-secondary mb-0">
                                         <small>
-                                            {formatCurrency(thing.value, thing.currency)}
+                                            {#if thing.currency === fromCode}
+                                                {formatCurrency(thing.value, thing.currency)}
+                                            {:else}
+                                                {roundCurrency(rateInverse.convert(thing.value), fromCode)}
+                                            {/if}
                                         </small>
                                     </p>
                                 </td>
@@ -354,5 +373,9 @@
 <style>
     small {
         font-size: 0.75em;
+    }
+
+    .form-switch {
+        padding-left: 0;
     }
 </style>

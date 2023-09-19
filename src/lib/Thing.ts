@@ -6,6 +6,7 @@ export interface ThingJson {
     value: number;
     currency: string;
     custom: boolean;
+    visible: boolean;
 }
 
 export default class Thing {
@@ -15,6 +16,7 @@ export default class Thing {
     currency: string;
     _value: number = 0;
     custom: boolean = false;
+    visible: boolean = true;
 
     constructor() {
         this.id = crypto.randomUUID();
@@ -28,6 +30,7 @@ export default class Thing {
         thing.value = json.value;
         thing.custom = json.custom;
         thing.currency = json.currency;
+        thing.visible = (typeof json.visible === "boolean") ? json.visible : true;
         return thing;
     }
 
@@ -67,6 +70,7 @@ export default class Thing {
             value: this.value,
             currency: this.currency,
             custom: this.custom,
+            visible: this.visible,
         }
     }
 }
