@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount } from "svelte";
     import { browser } from "$app/environment";
+
+    import { formatCurrency, roundCurrency } from "$lib/utils/maths";
     import Api, { KEY_THINGS } from "$lib/Api";
     import Currency from "$lib/Currency";
     import LocalStorage from "$lib/LocalStorage";
@@ -74,35 +76,6 @@
         things = things;
     }
 
-    const formatCurrency = function(num: number, currency: string, maximumFractionDigits = 2) {
-        const locale = navigator.language || "en";
-        const numFormat = new Intl.NumberFormat(locale, {
-            style: 'currency',
-            currency,
-            maximumFractionDigits,
-        });
-
-        return numFormat.format(num);
-    }
-
-    const roundCurrency = function(num: number, currency: string) {
-        let i = 100000000;
-        let onePercent = num * 0.01;
-
-        while (i > 1) {
-            const newNum = Math.round(num / i) * i;
-            const percent = 1 - ((newNum / num) * 100);
-
-            if (Math.abs(num-newNum) < onePercent) {
-                num = newNum;
-                break;
-            }
-            i = i / 10;
-        }
-
-        return formatCurrency(num, currency, (num >= 10) ? 0 : 2);
-    }
-
     const addThing = function(code: string) {
         things[code].push(new Thing());
         things = things;
@@ -148,7 +121,7 @@
 </script>
 
 <svelte:head>
-    <title>Currency Converter</title>
+    <title>Currency Cheatsheet</title>
     <meta name="description" content="" />
 </svelte:head>
 
