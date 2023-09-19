@@ -11,19 +11,25 @@ export const KEY_THINGS = "things";
 
 export default class CurrecyApi {
     static async getCurrencies() {
+        let currencies: Currency[] = [];
+
         // Read cache
         const cachedStr = LocalStorage.getItem(KEY_CURRENCIES);
         if (cachedStr) {
             const cachedJson: CurrencyJson[] = JSON.parse(cachedStr);
-            return cachedJson.map((item) => Currency.fromJson(item));
+            currencies = cachedJson.map((item) => Currency.fromJson(item));
         }
 
         // Load API
-        const currencies = await ExchangeRateHost.getCurrencies();
-        currencies.sort((a, b) => a.name.localeCompare(b.name));
+        if (currencies.length === 0) {
+            currencies = await ExchangeRateHost.getCurrencies();
 
-        // Write cache
-        LocalStorage.setItem(KEY_CURRENCIES, JSON.stringify(currencies.map((item) => item.toJson())));
+            // Write cache
+            const json = JSON.stringify(currencies.map((item) => item.toJson()));
+            LocalStorage.setItem(KEY_CURRENCIES, json);
+        }
+
+        currencies.sort((a, b) => a.name.localeCompare(b.name));
 
         return currencies;
     }

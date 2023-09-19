@@ -16,8 +16,6 @@ export function generateDefaultThings(rate: Rate, baseRate: Rate) {
                 : prev;
         });
 
-        console.log(rate.from, multiplier)
-
         return baseValues.map((value) => {
             value = value * multiplier;
 

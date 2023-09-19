@@ -186,7 +186,7 @@
                         <div class="input-group input-group-sm">
                             <select bind:value={fromCode} class="form-select" id="currency-from">
                                 {#each currencies as currency}
-                                    <option value={currency.code}>{currency.code} {currency.name}</option>
+                                    <option value={currency.code}>{currency.name} {currency.code} </option>
                                 {/each}
                             </select>
 
@@ -196,7 +196,7 @@
 
                             <select bind:value={toCode} class="form-select" id="currency-to">
                                 {#each currencies as currency}
-                                    <option value={currency.code}>{currency.code} {currency.name}</option>
+                                    <option value={currency.code}>{currency.name} {currency.code} </option>
                                 {/each}
                             </select>
                         </div>
