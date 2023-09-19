@@ -38,18 +38,30 @@ export default class CurrecyApi {
         const key = `${KEY_RATE}-${from}-${to}`;
 
         // Read cache
-        const cachedStr = LocalStorage.getItem(key);
+        let cachedRate: Rate|null = null;
+        const cachedStr = LocalStorage.getItem(key) || null;
         if (cachedStr) {
-            return Rate.fromJson(JSON.parse(cachedStr));
+            cachedRate = Rate.fromJson(JSON.parse(cachedStr));
+
+            const age = (Date.now() - cachedRate.updatedAt) / 1000;
+            if (age < 60 * 60) {
+                return cachedRate;
+            }
         }
 
         // Load API
-        const rate = await ExchangeRateHost.getRate(from, to);
+        try {
+            const rate = await ExchangeRateHost.getRate(from, to);
 
-        // Write cache
-        LocalStorage.setItem(key, JSON.stringify(rate.toJson()));
+            // Write cache
+            LocalStorage.setItem(key, JSON.stringify(rate.toJson()));
 
-        return rate;
+            return rate;
+        } catch (err) {
+            console.error("getRate", err);
+        }
+
+        return cachedRate;
     }
 
     static async getThings() {

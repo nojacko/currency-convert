@@ -186,8 +186,8 @@
                             <div class="col-12">
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-text" id="thing-description-{thing.id}">Description</span>
-                                    <input id="thing-description-{thing.id}" type="text" class="form-control form-control-sm"
-                                        placeholder="optional"
+                                    <input id="thing-description-{thing.id}" class="form-control form-control-sm"
+                                        type="text" placeholder="optional"
                                         bind:value={thing.description}
                                     >
                                 </div>
@@ -209,7 +209,10 @@
                                 {/each}
                             </select>
 
-                            <button on:click={swap} class="btn btn-outline-secondary btn-sm mx-auto" type="button" title="Swap">
+                            <button class="btn btn-outline-secondary btn-sm mx-auto"
+                                type="button" title="Swap"
+                                on:click={swap}
+                            >
                                 <i class="fa-solid fa-shuffle"></i>
                             </button>
 
@@ -310,27 +313,37 @@
     <div class="row">
         <div class="col-12 text-center">
             {#if customise}
-                <button on:click={() => addThing(fromCode)}
-                    class="btn btn-outline-secondary m-1" type="button" title="Save">
+                <button class="btn btn-outline-secondary m-1"
+                    type="button" title="Save"
+                    on:click={() => addThing(fromCode)}
+                >
                     <i class="fa-solid fa-plus"></i> Add {fromCode}
                 </button>
-                <button on:click={() => addThing(toCode)}
-                    class="btn btn-outline-secondary m-1" type="button" title="Save">
+                <button class="btn btn-outline-secondary m-1"
+                    type="button" title="Save"
+                    on:click={() => addThing(toCode)}
+                >
                     <i class="fa-solid fa-plus"></i> Add {toCode}
                 </button>
                 <br>
 
-                <button on:click={() => { saveThings(); customise = false; }}
-                    class="btn btn-outline-primary m-1" type="button" title="Save">
+                <button class="btn btn-outline-primary m-1"
+                    type="button" title="Save"
+                    on:click={() => { saveThings(); customise = false; }}
+                >
                     <i class="fa-solid fa-save"></i> Save
                 </button>
-                <button on:click={() => { window.confirm("Reset?") && resetThings(); customise = false; }}
-                    class="btn btn-outline-warning m-1" type="button" title="Save">
+                <button class="btn btn-outline-warning m-1"
+                    type="button" title="Save"
+                    on:click={() => { window.confirm("Reset?") && resetThings(); customise = false; }}
+                >
                     <i class="fa-solid fa-arrows-rotate"></i> Reset
                 </button>
             {:else}
-                <button on:click={() => customise = true}
-                    class="btn btn-outline-secondary m-1" type="button" title="Customise">
+                <button class="btn btn-outline-secondary m-1"
+                    type="button" title="Customise"
+                    on:click={() => customise = true}
+                >
                     <i class="fa-solid fa-gear"></i> Customise
                 </button>
             {/if}
