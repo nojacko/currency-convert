@@ -12,6 +12,8 @@
 
     const DEFAULT_FROM_CODE = "GBP";
     const DEFAULT_TO_CODE = "THB";
+    const FROM = "from";
+    const TO = "to"
 
     let customise = false;
 
@@ -23,6 +25,9 @@
     let currencies: Currency[] = [];
     let rate: Rate|null;
     let rateInverse: Rate|null;
+
+    let quickFrom = 1;
+    let quickTo = 0;
 
     // For default "Things", relative to USD
     const BASE = "USD";
@@ -105,12 +110,26 @@
         const tempFromCode = fromCode;
         fromCode = toCode;
         toCode = tempFromCode;
+
+        const tempQuickFrom = quickFrom;
+        quickFrom = quickTo;
+        quickTo = tempQuickFrom;
+    }
+
+    const quick = function(side: string) {
+        switch (side) {
+            case FROM: quickTo = parseFloat((rate?.convert(quickFrom) || 0).toFixed(2)); break;
+            case TO: quickFrom = parseFloat((rateInverse?.convert(quickTo) || 0).toFixed(2)); break;
+        }
+
+        return null;
     }
 
     onMount(async () => {
         things = await Api.getThings();
         currencies = await Api.getCurrencies();
         await updateRate();
+        quick(FROM);
     });
 </script>
 
@@ -179,7 +198,7 @@
             </div>
         {/each}
     {:else}
-        <table class="table table-hover table-striped text-center">
+        <table class="table table-borderless table-striped text-center">
             <thead>
                 <tr>
                     <td class="col-12 px-0 py-3" colspan="3">
@@ -206,6 +225,32 @@
 
             {#if rate && rateInverse && things && Array.isArray(things)}
                 <tbody>
+                    <tr>
+                        <td class="col-5 align-middle p-1">
+                            <div class="input-group input-group-sm">
+                                <input class="form-control form-control-sm text-end"
+                                    type="number" min="0" placeholder=""
+                                    on:change={() => quick(FROM)}
+                                    bind:value={quickFrom}
+                                >
+                                <span class="input-group-text">{fromCode}</span>
+                            </div>
+                        </td>
+                        <td class="col-1 align-middle p-1">
+                            <i class="fa-solid fa-arrows-left-right"></i>
+                        </td>
+                        <td class="col-5 align-middle p-1">
+                            <div class="input-group input-group-sm">
+                                <input class="form-control form-control-sm text-end"
+                                    type="number" min="0" placeholder=""
+                                    on:change={() => quick(TO)}
+                                    bind:value={quickTo}
+                                >
+                                <span class="input-group-text">{toCode}</span>
+                            </div>
+                        </td>
+                    </tr>
+
                     {#each things as thing (thing.id)}
                         {#if
                             (
