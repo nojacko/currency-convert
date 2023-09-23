@@ -1,6 +1,6 @@
 <script lang="ts">
     import Thing from "$lib/Thing";
-    import { formatCurrency } from "./utils/maths";
+    import { formatCurrency, roundCurrency } from "./utils/maths";
 
     export let thing: Thing;
 </script>
@@ -9,7 +9,7 @@
     {#if thing.name}
         {thing.name}
     {:else}
-        {formatCurrency(thing.value, thing.currency)}
+        {roundCurrency(thing.value, thing.currency)}
     {/if}
 </div>
 {#if thing.description && thing.description.length}

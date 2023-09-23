@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { onMount } from "svelte";
+	import { slide } from "svelte/transition";
     import { browser } from "$app/environment";
 
-    import { formatCurrency, roundCurrency } from "$lib/utils/maths";
+    import { formatCurrency } from "$lib/utils/maths";
     import { generateDefaultThings } from "$lib/utils/currency";
     import Api, { KEY_THINGS } from "$lib/Api";
     import Currency from "$lib/Currency";
@@ -17,7 +18,8 @@
     const FROM = "from";
     const TO = "to"
 
-    let customise = false;
+    let showCustomise = false;
+    let showCustomiseDefault = false;
 
     let things: Thing[] = [];
     let fromCode = LocalStorage.getItem("DEFAULT_FROM_CODE") || DEFAULT_FROM_CODE;
@@ -37,6 +39,8 @@
     let baseRateInverse: Rate|null;
 
     $: fromCode, toCode, updateRate();
+    $: thingsCustom = things.filter((thing) => thing.custom)
+    $: thingsBuiltIn = things.filter((thing) => !thing.custom)
 
     const updateRate = async() => {
         if (fromCode && toCode) {
@@ -143,75 +147,153 @@
 <div class="container-fluid mx-auto px-2" style="max-width: 40rem;">
     <h1 class="display-4 text-center text-light mx-1 my-2">Currency Cheatsheet</h1>
 
-    {#if customise && Array.isArray(things)}
-        {#each things as thing (thing.id)}
-            <div class="card border-secondary mb-2">
-                <div class="card-header">
-                    <div class="row align-items-center">
-                        <div class="col-10 col-sm-11">{thing.name ? `${thing.name} (${thing.currency})` : formatCurrency(thing.value, thing.currency)}</div>
-                        <div class="col-2 col-sm-1">
-                            <div class="d-grid gap-2">
-                                {#if thing.custom}
-                                    <button
-                                        id="delete-{thing.id}" class="btn btn-sm btn-outline-danger float-end" type="button" title="Delete"
-                                        on:click={() => deleteThing(thing)}
-                                    >
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                {:else}
-                                    <button
-                                        id="delete-{thing.id}" class="btn btn-sm btn-outline-secondary float-end" type="button" title="Delete"
-                                        on:click={() => thing.visible = !thing.visible }
-                                    >
-                                        <i class="fa-regular {thing.visible ? "fa-eye" : "fa-eye-slash" }"></i>
-                                    </button>
-                                {/if}
+    {#if showCustomise}
+        <div class="row mb-2">
+            <div class="col-12">
+                <div class="card border-secondary mb-2">
+                    <div class="card-header p-2">
+                        <div class="container-fluid">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <strong>Your Conversions</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {#if Array.isArray(thingsCustom)}
+                        <div class="card-body p-2">
+                            {#each thingsCustom as thing (thing.id)}
+                                <div class="card border-secondary mb-2">
+                                    <div class="card-header">
+                                        <div class="row align-items-center">
+                                            <div class="col-10 col-sm-11">{thing.name ? `${thing.name} (${thing.currency})` : formatCurrency(thing.value, thing.currency)}</div>
+                                            <div class="col-2 col-sm-1">
+                                                <div class="d-grid gap-2">
+                                                    <button
+                                                        id="delete-{thing.id}" class="btn btn-sm btn-outline-danger float-end" type="button" title="Delete"
+                                                        on:click={() => deleteThing(thing)}
+                                                    >
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body py-3 p-0">
+                                        <div class="container-fluid">
+                                            <div class="row gx-2">
+                                                <div class="col-12 col-sm-6 pb-2">
+                                                    <div class="input-group input-group-sm">
+                                                        <span class="input-group-text" id="thing-name-{thing.id}">Name</span>
+                                                        <input
+                                                            id="thing-name-{thing.id}" type="text" class="form-control"
+                                                            placeholder="optional"
+                                                            bind:value={thing.name}
+                                                        >
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-sm-6 pb-2">
+                                                    <div class="input-group input-group-sm">
+                                                        <span class="input-group-text">Amount</span>
+                                                        <input
+                                                            id="thing-value-{thing.id}" type="number" class="form-control form-control-sm text-end"
+                                                            min="0" placeholder=""
+                                                            bind:value={thing.value}
+                                                        >
+                                                        <span class="input-group-text">{thing.currency}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row gx-2">
+                                                <div class="col-12">
+                                                    <div class="input-group input-group-sm">
+                                                        <span class="input-group-text" id="thing-description-{thing.id}">Description</span>
+                                                        <input id="thing-description-{thing.id}" class="form-control form-control-sm"
+                                                            type="text" placeholder="optional"
+                                                            bind:value={thing.description}
+                                                        >
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {/each}
+                        </div>
+                    {/if}
+
+                    <div class="card-body mt-0 p-2 pt-0">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="co; text-center">
+                                    <div class="btn-group" role="group" aria-label="Basic outlined example">
+                                        <button class="btn btn-outline-primary"
+                                            type="button" title="Add {fromCode}"
+                                            on:click={() => addThing(fromCode)}
+                                        >
+                                            <i class="fa-solid fa-plus"></i> {fromCode}
+                                        </button>
+                                        <button class="btn btn-outline-primary"
+                                            type="button" title="Add {toCode}"
+                                            on:click={() => addThing(toCode)}
+                                        >
+                                            <i class="fa-solid fa-plus"></i> {toCode}
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                {#if thing.custom}
-                    <div class="card-body py-3 p-0">
-                        <div class="container-fluid">
-                            <div class="row gx-2">
-                                <div class="col-12 col-sm-6 pb-2">
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-text" id="thing-name-{thing.id}">Name</span>
-                                        <input
-                                            id="thing-name-{thing.id}" type="text" class="form-control"
-                                            placeholder="optional"
-                                            bind:value={thing.name}
-                                        >
+            </div>
+        </div>
+
+        {#if Array.isArray(thingsBuiltIn)}
+            <div class="row mb-2">
+                <div class="col-12">
+                    <div class="card border-secondary mb-2">
+                        <div class="card-body p-2">
+                            <div class="container-fluid">
+                                <div class="row align-items-center">
+                                    <div class="col-10">
+                                        <strong>Default Conversions</strong>
                                     </div>
-                                </div>
-                                <div class="col-12 col-sm-6 pb-2">
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-text">Amount</span>
-                                        <input
-                                            id="thing-value-{thing.id}" type="number" class="form-control form-control-sm text-end"
-                                            min="0" placeholder=""
-                                            bind:value={thing.value}
+                                    <div class="col-2 text-end">
+                                        <button class="btn btn-sm btn-outline-secondary" type="button" title="Toggle"
+                                            on:click={() => {showCustomiseDefault = !showCustomiseDefault }}
                                         >
-                                        <span class="input-group-text">{thing.currency}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row gx-2">
-                                <div class="col-12">
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-text" id="thing-description-{thing.id}">Description</span>
-                                        <input id="thing-description-{thing.id}" class="form-control form-control-sm"
-                                            type="text" placeholder="optional"
-                                            bind:value={thing.description}
-                                        >
+                                            <i class="fa-solid {showCustomiseDefault ? "fa-arrow-up" : "fa-arrow-down"}"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        {#if showCustomiseDefault}
+                            {#each thingsBuiltIn as thing (thing.id)}
+                                <div class="card-body p-2" transition:slide>
+                                    <div class="container-fluid">
+                                        <div class="row align-items-center">
+                                            <div class="col-10">
+                                                {thing.name ? `${thing.name} (${thing.currency})` : formatCurrency(thing.value, thing.currency)}
+                                            </div>
+                                            <div class="col-2 text-end">
+                                                <button
+                                                    id="delete-{thing.id}" class="btn btn-sm btn-outline-secondary" type="button" title="Delete"
+                                                    on:click={() => thing.visible = !thing.visible }
+                                                >
+                                                    <i class="fa-regular {thing.visible ? "fa-eye" : "fa-eye-slash" }"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {/each}
+                        {/if}
                     </div>
-                {/if}
+                </div>
             </div>
-        {/each}
+        {/if}
     {:else}
         <table class="table table-borderless table-striped text-center">
             <thead>
@@ -224,8 +306,7 @@
                                 {/each}
                             </select>
 
-                            <button class="btn btn-outline-secondary btn-sm mx-auto"
-                                type="button" title="Swap"
+                            <button type="button" class="btn btn-outline-secondary btn-sm mx-auto" title="Swap"
                                 on:click={swap}
                             >
                                 <i class="fa-solid fa-shuffle"></i>
@@ -302,39 +383,22 @@
         </table>
     {/if}
 
-    <div class="row">
+    <div class="row mb-2">
         <div class="col-12 text-center">
-            {#if customise}
-                <button class="btn btn-outline-secondary m-1"
-                    type="button" title="Save"
-                    on:click={() => addThing(fromCode)}
-                >
-                    <i class="fa-solid fa-plus"></i> Add {fromCode}
-                </button>
-                <button class="btn btn-outline-secondary m-1"
-                    type="button" title="Save"
-                    on:click={() => addThing(toCode)}
-                >
-                    <i class="fa-solid fa-plus"></i> Add {toCode}
-                </button>
-                <br>
-
-                <button class="btn btn-outline-primary m-1"
-                    type="button" title="Save"
-                    on:click={() => { saveThings(); customise = false; }}
-                >
-                    <i class="fa-solid fa-save"></i> Save
-                </button>
-                <button class="btn btn-outline-warning m-1"
-                    type="button" title="Save"
-                    on:click={() => { window.confirm("Reset?") && resetThings(); customise = false; }}
+            {#if showCustomise}
+                <button type="button" class="btn btn-outline-warning m-1" title="Save"
+                    on:click={() => { window.confirm("Reset?") && resetThings(); showCustomise = false; }}
                 >
                     <i class="fa-solid fa-arrows-rotate"></i> Reset
                 </button>
+                <button type="button" class="btn btn-outline-primary m-1" title="Save"
+                    on:click={() => { saveThings(); showCustomise = false; }}
+                >
+                    <i class="fa-solid fa-save"></i> Save
+                </button>
             {:else}
-                <button class="btn btn-outline-secondary m-1"
-                    type="button" title="Customise"
-                    on:click={() => customise = true}
+                <button type="button" class="btn btn-outline-secondary m-1" title="Customise"
+                    on:click={() => showCustomise = true}
                 >
                     <i class="fa-solid fa-gear"></i> Customise
                 </button>
@@ -342,3 +406,9 @@
         </div>
     </div>
 </div>
+
+<style>
+    .card button {
+        min-width: 2rem;
+    }
+</style>
