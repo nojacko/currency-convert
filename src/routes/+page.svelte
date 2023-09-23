@@ -9,6 +9,8 @@
     import LocalStorage from "$lib/LocalStorage";
     import Rate from "$lib/Rate";
     import Thing from "$lib/Thing";
+    import ThingTd from "$lib/TdThing.svelte";
+    import TdConvert from "$lib/TdConvert.svelte";
 
     const DEFAULT_FROM_CODE = "GBP";
     const DEFAULT_TO_CODE = "THB";
@@ -276,47 +278,20 @@
                         }
                             <tr>
                                 <td class="col-5 align-middle p-1">
-                                    <div class="fs-6">
-                                        {#if thing.name}
-                                            {thing.name}
-                                        {:else if thing.currency === fromCode}
-                                            {formatCurrency(thing.value, thing.currency)}
-                                        {:else}
-                                            {roundCurrency(rateInverse.convert(thing.value), fromCode)}
-                                        {/if}
-                                    </div>
-                                    {#if thing.description && thing.description.length}
-                                        <small>{thing.description}</small>
+                                    {#if thing.currency === fromCode}
+                                        <ThingTd thing={thing} />
+                                    {:else}
+                                        <TdConvert thing={thing} rate={rateInverse}/>
                                     {/if}
-
-                                    <p class="text-secondary mb-0">
-                                        <small>
-                                            {#if thing.currency === fromCode}
-                                                {formatCurrency(thing.value, thing.currency)}
-                                            {:else}
-                                                {roundCurrency(rateInverse.convert(thing.value), fromCode)}
-                                            {/if}
-                                        </small>
-                                    </p>
                                 </td>
                                 <td class="col-1 align-middle p-1">
                                     <i class="fa-solid fa-arrows-left-right"></i>
                                 </td>
                                 <td class="col-5 align-middle p-1">
                                     {#if thing.currency === fromCode}
-                                        <p class="fs-6 mb-1">
-                                            {roundCurrency(rate.convert(thing.value), toCode)}
-                                        </p>
-                                        <p class="text-secondary mb-0">
-                                            <small>{formatCurrency(rate.convert(thing.value), toCode)}</small>
-                                        </p>
+                                        <TdConvert thing={thing} rate={rate}/>
                                     {:else}
-                                        <p class="fs-6 mb-1">
-                                            {roundCurrency(thing.value, toCode)}
-                                        </p>
-                                        <p class="text-secondary mb-0">
-                                            <small>{formatCurrency(thing.value, toCode)}</small>
-                                        </p>
+                                        <ThingTd thing={thing} />
                                     {/if}
                                 </td>
                             </tr>
@@ -367,13 +342,3 @@
         </div>
     </div>
 </div>
-
-<style>
-    small {
-        font-size: 0.75em;
-    }
-
-    .form-switch {
-        padding-left: 0;
-    }
-</style>
