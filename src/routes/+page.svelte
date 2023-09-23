@@ -94,14 +94,12 @@
     const resetThings = function() {
         things = [];
 
-        if (rate) {
-            if (baseRate) {
-                things.push(...generateDefaultThings(rate, baseRate));
-            }
+        if (rate && baseRate) {
+            things.push(...generateDefaultThings(rate, baseRate));
+        }
 
-            if (baseRateInverse) {
-                things.push(...generateDefaultThings(rateInverse, baseRateInverse));
-            }
+        if (rateInverse && baseRateInverse) {
+            things.push(...generateDefaultThings(rateInverse, baseRateInverse));
         }
 
         things = things;
